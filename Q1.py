@@ -19,10 +19,10 @@ image = cv2.imread(image_path)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 # Apply Gaussian Blur to reduce noise and improve edge detection
-blurred = cv2.GaussianBlur(gray, (15, 15), 0)
+blurred = cv2.GaussianBlur(gray, (11, 11), 0)
 
 # Edge detection using Canny
-edges = cv2.Canny(blurred, 50, 220)
+edges = cv2.Canny(blurred, 0, 234)
 
 # Find contours from the edges
 contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -63,7 +63,7 @@ plt.axis('off')
 
 plt.subplot(1, 3, 2)
 plt.title('Canny Edges')
-plt.imshow(edges, cmap='gray')
+plt.imshow(edges, cmap='nipy_spectral')
 plt.axis('off')
 
 plt.subplot(1, 3, 3)
@@ -73,47 +73,36 @@ plt.axis('off')
 
 plt.show()
 
-# Load image
-image_path = "input_images/scatter.jpg"  # Update this with your image path
 image = cv2.imread(image_path)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# Step 1: Apply Gaussian Blur to reduce noise (increased from (1,1) to (5,5))
+# Step 1: Apply Gaussian Blur to reduce noise
 blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-# Step 2: Apply Otsu’s thresholding to segment foreground and background
-_, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+# Step 2: Apply Otsu’s thresholding (Ensure foreground is white)
+_, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-# Step 3: Morphological operations (kernel size increased from (1,1) to (3,3))
+# Step 4: Morphological operations to remove noise
 kernel = np.ones((3, 3), np.uint8)
 cleaned = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel, iterations=2)
 
-# Step 4: Label connected components (changed connectivity from 1 → 2)
+# Step 5: Label connected components
 labels = measure.label(cleaned, connectivity=2)
 
-# Step 5: Reduce `min_size` from 500 → 200 to keep smaller coins
-labels = morphology.remove_small_objects(labels, min_size=201)
+# Step 6: Remove small objects (Set min_size based on coin size)
+labels = morphology.remove_small_objects(labels, min_size=2000)  # Adjust if needed
 
-# Step 6: Convert labels into a colored segmentation mask
+# Step 7: Convert labeled regions into a colored mask
 colored_labels = color.label2rgb(labels, bg_label=0)
 
-# Step 7: Count total number of detected coins
+# Step 8: Count total number of detected coins
 num_coins = len(np.unique(labels)) - 1  # Exclude background
 
 print(f"[Segmentation] Total Coins Detected: {num_coins}")
 
-cv2.imwrite(os.path.join(output_dir, 'region_based_segmented_coins.jpg'), colored_labels)
-
-# Display results
-plt.figure(figsize=(10, 6))
-plt.subplot(1, 2, 1)
-plt.title("Original Image")
-plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-plt.axis("off")
-
-plt.subplot(1, 2, 2)
-plt.title("Segmented Coins (Region-Based)")
+# Step 9: Display the segmented coins properly
+plt.figure(figsize=(6, 6))
 plt.imshow(colored_labels)
+plt.title("Segmented Coins (Corrected)")
 plt.axis("off")
-
 plt.show()
