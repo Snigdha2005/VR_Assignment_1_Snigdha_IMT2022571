@@ -100,6 +100,9 @@ num_coins = len(np.unique(labels)) - 1  # Exclude background
 
 print(f"[Segmentation] Total Coins Detected: {num_coins}")
 
+segmented_im = (colored_labels * 255).astype(np.uint8)
+cv2.imwrite(os.path.join(output_dir, 'region_based_segmentation.jpg'), segmented_im)
+
 # Step 9: Display the segmented coins properly
 plt.figure(figsize=(6, 6))
 plt.imshow(colored_labels)
