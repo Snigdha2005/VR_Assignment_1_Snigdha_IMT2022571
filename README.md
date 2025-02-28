@@ -107,3 +107,75 @@ Output files generated will be available in the output_images directory.
 ![Keypoints in 1st image](output_images/1_keypoints.jpg)
 ![Keypoints in 2nd image](output_images/2_keypoints.jpg)
 ![Stitched Panorama](output_images/stitched_panorama.jpg)
+
+## Folder Structure
+
+```
+.
+├── Q1.py
+├── Q2.py
+├── Q2_1.py
+├── README.md
+├── input_images
+│   ├── A_panorama.jpg
+│   ├── B_panorama.jpg
+│   └── scatter.jpg
+└── output_images
+    ├── 1_keypoints.jpg
+    ├── 2_keypoints.jpg
+    ├── coin_1.jpg
+    ├── coin_10.jpg
+    ├── coin_2.jpg
+    ├── coin_3.jpg
+    ├── coin_4.jpg
+    ├── coin_5.jpg
+    ├── coin_6.jpg
+    ├── coin_7.jpg
+    ├── coin_8.jpg
+    ├── coin_9.jpg
+    ├── detected_coins.jpg
+    ├── edges.jpg
+    ├── region_based_segmentation.jpg
+    └── stitched_panorama.jpg
+```
+
+## Results and Observations
+### Coin Edge Detection, Segmentation, and Counting
+1. Edge-Based Detection (Contours Method)
+
+- Successfully detected coin edges using the Canny Edge Detector.
+- Contours were drawn accurately around the coin boundaries.
+
+2. Region-Based Segmentation (Thresholding and Morphological Operations)
+
+- Otsu’s thresholding effectively separated the foreground (coins) from the background.
+- Morphological operations helped in noise reduction and filling gaps in segmented coins.
+- The connected component analysis counted the number of coins correctly in most cases.
+- Some overlapping coins may affect the segmentation accuracy.
+
+Final Output
+
+- The total number of coins was correctly counted.
+- Segmented coin images were stored successfully in the output_images folder.
+
+### Panorama Stitching
+1. Keypoint Detection and Matching
+
+- SIFT detected keypoints efficiently in overlapping image regions.
+- Brute-force matching worked well to establish feature correspondences.
+- Keypoints were saved as images for visualization.
+2. Image Warping and Homography
+
+- The computed homography matrix effectively aligned images.
+- Warping successfully transformed images onto a common perspective.
+- Some distortions were observed at the edges due to perspective transformation.
+
+Final Panorama
+
+- Trimming black borders improved the aesthetics of the panorama.
+- Misalignment issues arose in cases of extreme perspective differences or low feature matches.
+
+Challenges
+
+- Stitching failed or produced artifacts when input images had poor overlap.
+- Variations in brightness or exposure caused visible seams in some panoramas.
